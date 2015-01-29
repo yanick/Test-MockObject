@@ -42,6 +42,8 @@ sub set_isa
     my ($self, @supers) = @_;
     my $supers          = _isas( $self );
     $supers->{$_}       = 1 for @supers;
+
+    $self;
 }
 
 sub set_always

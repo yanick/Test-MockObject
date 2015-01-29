@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 use_ok( 'Test::MockObject' );
 my $mock = Test::MockObject->new();
@@ -25,3 +25,7 @@ isa_ok( $mock, 'Apache::Request' );
 
 # ... or reporting true for everything
 ok( ! $mock->isa( 'Fail' ), '... this is not a "Fail" object' );
+
+# ... and should return itself
+is( $mock->set_isa( 'AnotherParent' ), $mock );
+
