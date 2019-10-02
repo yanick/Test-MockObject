@@ -3,9 +3,12 @@
 use strict;
 use warnings;
 
+use Test::MockObject;
 my $package = 'Test::MockObject';
-use Test::More tests => 6;
-use_ok( $package );
+
+use Test2::V0;
+
+plan tests => 5;
 
 my $mock = $package->new();
 $mock->set_true( -somesub => 'anothersub' );

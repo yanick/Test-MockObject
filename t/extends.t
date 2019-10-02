@@ -3,11 +3,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 41;
+use Test2::V0;
 use Test::Exception;
 
+use Test::MockObject::Extends;
+
+plan tests => 38;
+
 my $module = 'Test::MockObject::Extends';
-use_ok( $module ) or exit;
 
 my $tme = $module->new();
 isa_ok( $tme, 'Test::MockObject' );
@@ -171,7 +174,7 @@ is( $method_name,     'Foo::bar', '... with the appropriate $Foo::AUTOLOAD' );
 
 # get the parents of the mocked object (to work with SUPER)
 $result = [ $mock->__get_parents() ];
-is_deeply( $result, [qw( Parent )],
+is( $result, [qw( Parent )],
 	'__get_parents() should return a list of parents of the wrapped object' );
 
 
@@ -207,11 +210,12 @@ lives_ok { $mock = Test::MockObject::Extends->new( $object ) }
 	'Creating a wrapped module should not die';
 isa_ok( $mock, 'FooNoAutoload'   ); #37
 
-# Call foo()
-is( $mock->fooNA(),     'fooNA', 'fooNA() should return as expected' );
-is( $called_fooNA,          1, '... calling the method'          );
-is( $called_autoloadNA,     0, '... not touching AUTOLOAD()'     );
+subtest 'Call foo()' => sub {
+    is( $mock->fooNA(),     'fooNA', 'fooNA() should return as expected' );
+    is( $called_fooNA,          1, '... calling the method'          );
+    is( $called_autoloadNA,     0, '... not touching AUTOLOAD()'     );
+};
 
 # Call a non-existent method
-dies_ok (sub{ $mock->bar()},     
+dies_ok (sub{ $mock->bar()},
     '... should die if calling a non-mocked and non-AUTOLOADED method' );

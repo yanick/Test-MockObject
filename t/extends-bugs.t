@@ -3,11 +3,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 35;
+use Test2::V0;
 use Test::Exception;
 
+use Test::MockObject::Extends;
+
+plan tests => 34;
+
 my $module = 'Test::MockObject::Extends';
-use_ok( $module ) or exit;
 
 # RT #17692 - cannot mock inline package without new()
 

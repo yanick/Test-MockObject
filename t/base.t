@@ -3,21 +3,27 @@
 use strict;
 use warnings;
 
+use Test::MockObject;
+
 my $package = 'Test::MockObject';
-use Test::More tests => 103;
-use_ok( $package );
+use Test2::V0;
+
+plan tests => 95;
 
 # new()
 can_ok( $package, 'new' );
 my $mock = Test::MockObject->new();
 isa_ok( $mock, $package );
 
-# mock()
-can_ok( $mock, 'mock' );
-my $result = $mock->mock('foo');
-can_ok( $mock, 'foo' );
-is( $result, $mock, 'mock() should return itself' );
-is( $mock->foo(), undef, '... default mock should return nothing' );
+my $result;
+
+subtest 'mock()' => sub {
+    can_ok( $mock, 'mock' );
+    my $result = $mock->mock('foo');
+    can_ok( $mock, 'foo' );
+    is( $result, $mock, 'mock() should return itself' );
+    is( $mock->foo(), undef, '... default mock should return nothing' );
+};
 
 # remove()
 can_ok( $package, 'remove' );
@@ -38,7 +44,7 @@ is( $mock->can('foo'), \&foo, 'can() should return a subref' );
 
 can_ok( $package, 'set_always' );
 $result = $mock->set_always( 'bar', 'bar' );
-is( $mock->bar(), 'bar', 
+is( $mock->bar(), 'bar',
 	'set_always() should add a sub that always returns its value' );
 is( $mock->bar(), 'bar', '... so it should at least do it twice in a row' );
 is( $result, $mock, '... returning itself' );
@@ -96,7 +102,7 @@ can_ok( $package, 'call_pos' );
 $mock->foo(1, 2, 3);
 $mock->bar([ foo ]);
 $mock->baz($mock, 88);
-is( $mock->call_pos(1), 'foo', 
+is( $mock->call_pos(1), 'foo',
 	'call_pos() should report name of sub called by position' );
 is( $mock->call_pos(-1), 'baz', '... and should handle negative numbers' );
 
@@ -132,7 +138,7 @@ $mock->called_args_pos_is( 1, -1, 3 );
 
 can_ok( $package, 'fake_module' );
 $mock->fake_module( 'Some::Module' );
-is( $INC{'Some/Module.pm'}, 1, 
+is( $INC{'Some/Module.pm'}, 1,
 	'fake_module() should prevent a module from being loaded' );
 
 my @imported;
@@ -151,7 +157,7 @@ is( $imported[0], 'import::me',
 
 can_ok( $package, 'fake_new' );
 $mock->fake_new( 'Some::Module' );
-is( Some::Module->new(), $mock, 
+is( Some::Module->new(), $mock,
 	'fake_new() should create a fake constructor to return mock object' );
 
 can_ok( $package, 'check_class_loaded' );
@@ -223,7 +229,7 @@ $mock->baz();
 
 my ($method, $args) = $mock->next_call();
 is( $method, 'foo', 'next_call() should return first method' );
-isa_ok( $args, 'ARRAY', '... and args in a data structure which' );
+ref_ok( $args, 'ARRAY', '... and args in a data structure which' );
 is( join('-', @$args), "$mock-1-2-3", '... containing the real arguments' );
 ok( ! $mock->called( 'foo' ), '... and removing that call from the stack' );
 
@@ -234,18 +240,20 @@ is( $mock->next_call(), undef,
 	'... returning undef with no call in that position' );
 is( $result, 'baz', '... returning only the method name in scalar context' );
 
-# _calls()
-can_ok( $package, '_calls' );
-my $callstack = Test::MockObject::_calls( 'key' );
-isa_ok( $callstack, 'ARRAY', '_calls() should return something that' );
-$callstack->[0] = 'foo';
-is_deeply( Test::MockObject::_calls( 'key' ), [ 'foo' ],
-	'... always for the same key' );
+subtest '_calls()', sub {
+    can_ok( $package, '_calls' );
+    my $callstack = Test::MockObject::_calls( 'key' );
+    ref_ok( $callstack, 'ARRAY', '_calls() should return something that' );
+    $callstack->[0] = 'foo';
+    is( Test::MockObject::_calls( 'key' ), [ 'foo' ],
+        '... always for the same key' );
+};
 
-# _subs()
-can_ok( $package, '_subs' );
-my $subhash = Test::MockObject::_subs( 'key' );
-isa_ok( $subhash, 'HASH', '_subs() should return something that' );
-$subhash->{foo} = 'bar';
-is_deeply( Test::MockObject::_subs( 'key' ), { foo => 'bar' },
-	'... always for the same key' );
+subtest '_subs()' => sub {
+    can_ok( $package, '_subs' );
+    my $subhash = Test::MockObject::_subs( 'key' );
+    ref_ok( $subhash, 'HASH', '_subs() should return something that' );
+    $subhash->{foo} = 'bar';
+    is( Test::MockObject::_subs( 'key' ), { foo => 'bar' },
+        '... always for the same key' );
+};

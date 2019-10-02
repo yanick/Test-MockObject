@@ -3,7 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test2::V0;
+plan tests => 19;
+
 use Test::MockObject;
 
 use Scalar::Util 'weaken';
@@ -72,7 +74,7 @@ use Scalar::Util 'weaken';
 	$mock->set_true( 'foo' );
 	$_ = 'bar';
 	$mock->foo( $1 ) if /(\w+)/;
-	is( $mock->call_args_pos( -1, 2 ), 'bar', 
+	is( $mock->call_args_pos( -1, 2 ), 'bar',
 		'$1 should be preserved through AUTOLOAD invocation' );
 }
 

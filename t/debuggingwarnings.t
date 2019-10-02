@@ -3,14 +3,10 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test2::V0;
 use Test::Warn;
 
-BEGIN
-{
-    use_ok 'Test::MockObject';
-    Test::MockObject->import( '-debug' );
-}
+use Test::MockObject '-debug';
 
 package Foo;
 

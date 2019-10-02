@@ -3,12 +3,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test2::V0;
+plan tests => 3;
+
+use Test::MockObject;
 
 # ask for generated anonymous sub names with this debugger variable
 BEGIN { $^P |= 0x200 }
 
-use_ok( 'Test::MockObject' );
 my $mock = Test::MockObject->new();
 
 package Some::Parent;

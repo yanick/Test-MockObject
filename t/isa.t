@@ -3,9 +3,12 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test2::V0;
 
-use_ok( 'Test::MockObject' );
+plan tests => 6;
+
+use Test::MockObject;
+
 my $mock = Test::MockObject->new();
 
 can_ok( $mock, 'set_isa' );
